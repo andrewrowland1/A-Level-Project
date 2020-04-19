@@ -3,6 +3,8 @@ import random
 import math
 font_name = pygame.font.match_font('calibri')
 
+
+
 # -- Global constants
 map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -55,8 +57,7 @@ map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 
-
-## -- Define the class title which is a sprite
+#Define class tile which is a sprite
 class Tile(pygame.sprite.Sprite):
     # Define the constructor
     def __init__(self,color,width,height,x_ref,y_ref):
@@ -183,8 +184,10 @@ class Health_pu(pygame.sprite.Sprite):
         # Set the position of the player attributes
         self.rect.x = x_ref
         self.rect.y = y_ref
+    #End procedure
+#End class
 
-#Function that draws text
+#Function that draws text on screen
 def draw_text(surf,text,size,x_val,y_val):
         font = pygame.font.Font(font_name, size)
         text = font.render(text, True, WHITE)

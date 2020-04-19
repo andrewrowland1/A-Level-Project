@@ -67,7 +67,7 @@ class Tile(pygame.sprite.Sprite):
         #Create a sprite and fill it with colour
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
-        self.image = pygame.image.load("brick_wall.png")
+        self.image = pygame.image.load("brick_wall.png").convert()
         self.rect = self.image.get_rect()
 
         # Set the position of the player attributes
@@ -91,6 +91,8 @@ class Zombie(pygame.sprite.Sprite):
         #Position of player attributes
         self.rect.x = x_zombie
         self.rect.y = y_zombie
+    #End procedure
+#End Class
 
 
 class Player(pygame.sprite.Sprite):
@@ -169,6 +171,18 @@ class Bullet_pu(pygame.sprite.Sprite):
         # Set the position of the player attributes
         self.rect.x = x_ref
         self.rect.y = y_ref
+        
+class Health_pu(pygame.sprite.Sprite):
+
+    def __init__(self,color,width,height,x_ref,y_ref):
+        super().__init__()
+        self.image = pygame.Surface([width,height])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+
+        # Set the position of the player attributes
+        self.rect.x = x_ref
+        self.rect.y = y_ref
 
 #Function that draws text
 def draw_text(surf,text,size,x_val,y_val):
@@ -179,19 +193,46 @@ def draw_text(surf,text,size,x_val,y_val):
         surf.blit(text, text_rect)
 #End procedure
 
+def spawn_health_pu():
+    counter = 0
+    while counter != 5:
+        random_x = random.randint(1,49)
+        random_y = random.randint(1,49)
+            
+        if map[random_y][random_x] == 0:
+            pu_health = Health_pu(GREEN,20,20,random_x*20,random_y*20)
+            health_pu_list.add(pu_health)
+            all_sprites_list.add(pu_health)
+            counter += 1
+#End procedure
+
+def spawn_bullet_pu():
+    counter = 0
+    while counter != 5:
+        random_x = random.randint(1,49)
+        random_y = random.randint(1,49)
+
+        if map[random_y][random_x] == 0:
+            pu_bullet = Bullet_pu(WHITE,20,20,random_x*20,random_y*20)
+            bullet_pu_list.add(pu_bullet)
+            all_sprites_list.add(pu_bullet)
+            counter += 1
+#End procedure
+
 # -- colours
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 BLUE = (50,50,255)
 YELLOW = (255,255,0)
 RED = (255,0,0)
+GREEN = (0,255,0)
 
 # -- Initialise PyGame
 pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((size))
 
 # -- Title of new window/screen
 pygame.display.set_caption("Escape")
@@ -210,8 +251,9 @@ wall_list = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 bullet_pu_list = pygame.sprite.Group()
 zombie_list = pygame.sprite.Group()
+health_pu_list = pygame.sprite.Group()
 
-counter = 0
+
 count = 0
 
 # Create walls on the screen (each tile is 20x20 so alter cords)
@@ -225,16 +267,9 @@ for x in range(50):
             wall_list.add(my_wall)
             all_sprites_list.add(my_wall)
 
-        #Spawns powerups in random locations on the map
-        while counter != 5:
-            random_x = random.randint(1,49)
-            random_y = random.randint(1,49)
-
-            if map[random_y][random_x] == 0:
-                pu_bullet = Bullet_pu(WHITE,20,20,random_x*20,random_y*20)
-                bullet_pu_list.add(pu_bullet)
-                all_sprites_list.add(pu_bullet)
-                counter += 1
+        
+        
+                
 
         #Spawns zombies in random locations on the map. Cannot spawn on walls
         while count != 20:
@@ -246,10 +281,9 @@ for x in range(50):
                 all_sprites_list.add(zombie)
                 zombie_list.add(zombie)
                 count += 1
-
-
-
-
+#Spawns powerups
+spawn_bullet_pu()
+spawn_health_pu()
 
 
 
@@ -264,6 +298,9 @@ while not done:
     # -- User input and controls
 
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 done = True
@@ -303,28 +340,28 @@ while not done:
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "left":
-                my_bullet = Bullet(RED,5,5,-5,0)
+                my_bullet = Bullet(RED,10,10,-1,0)
                 bullet_group.add(my_bullet)
                 user.bullet_count +=-1
                 all_sprites_list.add(my_bullet)
                 #If player if facing left, the bullet will shoot left
 
             elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "right":
-                my_bullet = Bullet(RED,5,5,5,0)
+                my_bullet = Bullet(RED,10,10,1,0)
                 bullet_group.add(my_bullet)
                 user.bullet_count += -1
                 all_sprites_list.add(my_bullet)
                 #If player is facing right, the bullet will shoot right
 
             elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "up":
-                my_bullet = Bullet(RED,5,5,0,-5)
+                my_bullet = Bullet(RED,10,10,0,-1)
                 bullet_group.add(my_bullet)
                 user.bullet_count += -1
                 all_sprites_list.add(my_bullet)
                 #If player is facing up, the bullet shoots up
 
             elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
-                my_bullet = Bullet(RED,5,5,0,5)
+                my_bullet = Bullet(RED,10,10,0,1)
                 bullet_group.add(my_bullet)
                 user.bullet_count += -1
                 all_sprites_list.add(my_bullet)
@@ -332,7 +369,7 @@ while not done:
 
         # -- Game logic goes after this comment
 
-        #If plyaer collides with a zombie, their number of lives decreases by 1
+        #If player collides with a zombie, their number of lives decreases by 1
         user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
         for hit in user_hit_group:
             user.lives_count += -1
@@ -342,19 +379,26 @@ while not done:
 
 
         #When a bullet collides with a zombie, the zombie is removed
-        for bullet_shot in bullet_group:
-            zombie_hit_list = pygame.sprite.spritecollide(bullet_shot, zombie_list, True)
-            for bullet_shot in zombie_hit_list:
+        for shot in bullet_group:
+            zombie_hit_list = pygame.sprite.spritecollide(shot, zombie_list, True)   
+            for hit in zombie_hit_list:
                 bullet_group.remove(my_bullet)
                 all_sprites_list.remove(my_bullet)
                 user.zombies_killed += 1
 
     #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
-    powerup_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True)
-    for pu_bullet in powerup_hit_list:
+    bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
+    
+    for pu_bullet in bulletpu_hit_list:
         user.bullet_count += 10
         bullet_pu_list.remove(pu_bullet)
         all_sprites_list.remove(pu_bullet)
+        
+    healthpu_hit_list = pygame.sprite.spritecollide(user, health_pu_list, True)
+    for pu_health in healthpu_hit_list:
+        user.lives_count += 1
+        health_pu_list.remove(pu_health)
+        all_sprites_list.remove(pu_health)
 
     #If player collides with the wall,they go back to their previous x and y value
     player_hit_list = pygame.sprite.spritecollide(user, wall_list, False)

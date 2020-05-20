@@ -93,7 +93,12 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.y = y_zombie
     #End procedure
 #End Class
-
+class RandomZombie(Zombie):
+    def update(self):
+        self.rect.x = self.rect.x + 1
+    #End procedure
+#End Class
+    
 
 class Player(pygame.sprite.Sprite):
 
@@ -135,30 +140,6 @@ class Player(pygame.sprite.Sprite):
     def player_set_speed_y(self,val):
         self.speed_y = val
     #End procedure
-    def shoot_up(self):
-        my_bullet = Bullet(self.rect.x,self.rect.y,0,-1)
-        bullet_group.add(my_bullet)
-        self.bullet_count += -1
-        all_sprites_list.add(my_bullet)
-        #If player is facing up, the bullet shoots up
-    def shoot_down(self):
-        my_bullet = Bullet(self.rect.x,self.rect.y,0,1)
-        bullet_group.add(my_bullet)
-        self.bullet_count += -1
-        all_sprites_list.add(my_bullet)
-        #If player is facing down, then bullet shoots down
-    def shoot_right(self):
-        my_bullet = Bullet(self.rect.x,self.rect.y,1,0)
-        bullet_group.add(my_bullet)
-        self.bullet_count += -1
-        all_sprites_list.add(my_bullet)
-        #If player is facing right, the bullet will shoot right
-    def shoot_left(self):
-        my_bullet = Bullet(self.rect.x,self.rect.y,-1,0)
-        bullet_group.add(my_bullet)
-        self.bullet_count +=-1
-        all_sprites_list.add(my_bullet)
-        #If player if facing left, the bullet will shoot left
 #End Class
 
 class Bullet(pygame.sprite.Sprite):
@@ -181,6 +162,10 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.y = self.rect.y + self.speed_y
         self.rect.x = self.rect.x + self.speed_x
+        if self.rect.x > 1000:
+            self.kill()
+        if self.rect.y > 1000:
+            self.kill()
     # End Procedure
 # End Class
 
@@ -263,10 +248,43 @@ def spawn_walls():
                 rand_zomb_y = random.randint(1,49)
                 
                 if map [rand_zomb_y][rand_zomb_x] == 0:
-                    zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                    zombie = RandomZombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
                     all_sprites_list.add(zombie)
                     zombie_list.add(zombie)
                     count += 1
+#End procedure
+def shoot_up():
+    my_bullet = Bullet(user.rect.x,user.rect.y,0,-1)
+    bullet_group.add(my_bullet)
+    user.bullet_count += -1
+    all_sprites_list.add(my_bullet)
+    #If player is facing up, the bullet shoots up
+#End procedure
+    
+def shoot_down():
+    my_bullet = Bullet(user.rect.x,user.rect.y,0,1)
+    bullet_group.add(my_bullet)
+    user.bullet_count += -1
+    all_sprites_list.add(my_bullet)
+    #If player is facing down, then bullet shoots down
+#End procedure
+    
+def shoot_right():
+    my_bullet = Bullet(user.rect.x,user.rect.y,1,0)
+    bullet_group.add(my_bullet)
+    user.bullet_count += -1
+    all_sprites_list.add(my_bullet)
+    #If player is facing right, the bullet will shoot right
+#End procedure
+    
+def shoot_left():
+    my_bullet = Bullet(user.rect.x,user.rect.y,-1,0)
+    bullet_group.add(my_bullet)
+    user.bullet_count +=-1
+    all_sprites_list.add(my_bullet)
+    #If player if facing left, the bullet will shoot left
+#End procedure
+    
 def game_loop():
     done = False
     while not done:
@@ -314,31 +332,31 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
     
                 if event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "left":
-                    user.shoot_left()
+                    shoot_left()
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "right":
-                    user.shoot_right()
+                    shoot_right()
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "up":
-                    user.shoot_up()
+                    shoot_up()
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
-                    user.shoot_down()
+                    shoot_down()
     
-            # -- Game logic goes after this comment
+        # -- Game logic goes after this comment
     
-            #If player collides with a zombie, their number of lives decreases by 1
-            user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
-            for hit in user_hit_group:
-                user.lives_count += -1
-            #If player runs out of lives, the game quits
-            if user.lives_count < 1:
-                done = True
+        #If player collides with a zombie, their number of lives decreases by 1
+        user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
+        for hit in user_hit_group:
+            user.lives_count += -1
+        #If player runs out of lives, the game quits
+        if user.lives_count < 1:
+            done = True
     
     
-            bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
-            for shot in bullet_hits:
-                user.zombies_killed += 1
+        bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
+        for shot in bullet_hits:
+            user.zombies_killed += 1
             
     
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases

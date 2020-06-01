@@ -243,14 +243,19 @@ def spawn_walls():
                 all_sprites_list.add(my_wall)
                 
             #Spawns zombies in random locations on the map. Cannot spawn on walls
-            while count != 20:
+            while count != 10:
                 rand_zomb_x = random.randint(1,49)
                 rand_zomb_y = random.randint(1,49)
+                rand_zombrand_x = random.randint(1,49)
+                rand_zombrand_y = random.randint(1,49)
                 
                 if map [rand_zomb_y][rand_zomb_x] == 0:
-                    zombie = RandomZombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                    zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                    zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
                     all_sprites_list.add(zombie)
                     zombie_list.add(zombie)
+                    all_sprites_list.add(zombierandom)
+                    zombie_list.add(zombierandom)
                     count += 1
 #End procedure
 def shoot_up():

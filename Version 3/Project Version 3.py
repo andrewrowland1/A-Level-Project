@@ -91,12 +91,33 @@ class Zombie(pygame.sprite.Sprite):
         #Position of player attributes
         self.rect.x = x_zombie
         self.rect.y = y_zombie
+        self.speed_y = 1
+        self.speed_x = 1
+        
     #End procedure
 #End Class
-class RandomZombie(Zombie):
+class FollowerZombie(Zombie):
     def update(self):
-        self.rect.x = self.rect.x + 1
+        if user.rect.x > self.rect.x:
+            self.rect.x = self.rect.x + self.speed_x
+        if user.rect.x < self.rect.x:
+            self.rect.x = self.rect.x - self.speed_x
+        if user.rect.y > self.rect.y:
+            self.rect.y = self.rect.y + self.speed_y
+        if user.rect.y < self.rect.y:
+            self.rect.y = self.rect.y - self.speed_y
+class RandomZombie(Zombie):
+    
+    def update(self):
+        
+        self.rect.x = self.rect.x + self.speed_y
     #End procedure
+    def zombie_set_speed_x(self, val):
+        self.speed_x = val
+    # End procedure
+    def zombie_set_speed_y(self, val):
+        self.speed_y = val
+    # End procedure
 #End Class
     
 
@@ -229,35 +250,7 @@ def spawn_bullet_pu():
             all_sprites_list.add(pu_bullet)
             counter += 1
 #End procedure
-def spawn_walls():
-    count = 0
-    # Create walls on the screen (each tile is 20x20 so alter cords)
-    for x in range(50):
 
-        for y in range(50):
-
-            #Creates the walls on the map
-            if map[y][x] == 1:
-                my_wall = Tile(BLUE,20,20,x*20,y*20)
-                wall_list.add(my_wall)
-                all_sprites_list.add(my_wall)
-                
-            #Spawns zombies in random locations on the map. Cannot spawn on walls
-            while count != 10:
-                rand_zomb_x = random.randint(1,49)
-                rand_zomb_y = random.randint(1,49)
-                rand_zombrand_x = random.randint(1,49)
-                rand_zombrand_y = random.randint(1,49)
-                
-                if map [rand_zomb_y][rand_zomb_x] == 0:
-                    zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
-                    zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
-                    all_sprites_list.add(zombie)
-                    zombie_list.add(zombie)
-                    all_sprites_list.add(zombierandom)
-                    zombie_list.add(zombierandom)
-                    count += 1
-#End procedure
 def shoot_up():
     my_bullet = Bullet(user.rect.x,user.rect.y,0,-1)
     bullet_group.add(my_bullet)
@@ -389,6 +382,18 @@ def game_loop():
     
         user_old_x = user.rect.x
         user_old_y = user.rect.y
+        
+        #if zombie collides with the wall, they will go back to their previous x and y value
+      #  zombie_hit_list = pygame.sprite.spritecollide(zombierandom, wall_list, False)
+    #    for x in zombie_hit_list:
+   # 
+         #   zombierandom.zombie_set_speed_y(0)
+        #    zombierandom.zombie_set_speed_x(0)
+       #     zombierandom.rect.x = zombie_old_x
+      #      zombierandom.rect.y = zombie_old_y
+    ##
+        #zombie_old_x = zombierandom.rect.x
+        #zombie_old_y = zombierandom.rect.y
     
     
         all_sprites_list.update()
@@ -452,7 +457,6 @@ health_pu_list = pygame.sprite.Group()
 
 
 #Spawns walls and zombies
-spawn_walls()
 
 
 #Spawns powerups
@@ -466,6 +470,38 @@ spawn_health_pu()
 user = Player(RED,18,18)
 all_sprites_list.add(user)
 facing = "right"
+
+count = 0
+# Create walls on the screen (each tile is 20x20 so alter cords)
+for x in range(50):
+
+    for y in range(50):
+        #Creates the walls on the map
+        if map[y][x] == 1:
+            my_wall = Tile(BLUE,20,20,x*20,y*20)
+            wall_list.add(my_wall)
+            all_sprites_list.add(my_wall)
+                
+        #Spawns zombies in random locations on the map. Cannot spawn on walls
+        while count != 3:
+            rand_zomb_x = random.randint(1,49)
+            rand_zomb_y = random.randint(1,49)
+            rand_zombrand_x = random.randint(1,49)
+            rand_zombrand_y = random.randint(1,49)
+            rand_zombfollow_x = random.randint(1,49)
+            rand_zombfollow_y = random.randint(1,49)
+                
+            if map [rand_zomb_y][rand_zomb_x] == 0:
+                zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
+                zombiefollower = FollowerZombie(YELLOW,20,20,rand_zombfollow_x*20,rand_zombfollow_y*20)
+                all_sprites_list.add(zombiefollower)
+                zombie_list.add(zombiefollower)
+                all_sprites_list.add(zombie)
+                zombie_list.add(zombie)
+                all_sprites_list.add(zombierandom)
+                zombie_list.add(zombierandom)
+                count += 1
 
 #Creates the game loop
 game_loop()

@@ -106,11 +106,30 @@ class FollowerZombie(Zombie):
             self.rect.y = self.rect.y + self.speed_y
         if user.rect.y < self.rect.y:
             self.rect.y = self.rect.y - self.speed_y
+        #if zombie collides with the wall, they will go back to their previous x and y value
+        
+        for x in pygame.sprite.spritecollide(zombiefollower, wall_list, False):
+    
+            #self.zombie_set_speed_y(0)
+            #self.zombie_set_speed_x(0)
+            self.rect.x = self.zombie_old_x
+            self.rect.y = self.zombie_old_y
+            print(1)
+        self.zombie_old_x = self.rect.x
+        self.zombie_old_y = self.rect.y
+    def zombie_set_speed_x(self, val):
+        self.speed_x = val
+        # End procedure
+    def zombie_set_speed_y(self, val):
+        self.speed_y = val
+    # End procedure
 class RandomZombie(Zombie):
     
     def update(self):
         
         self.rect.x = self.rect.x + self.speed_y
+    
+        
     #End procedure
     def zombie_set_speed_x(self, val):
         self.speed_x = val
@@ -118,6 +137,8 @@ class RandomZombie(Zombie):
     def zombie_set_speed_y(self, val):
         self.speed_y = val
     # End procedure
+    
+        
 #End Class
     
 
@@ -188,6 +209,7 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.y > 1000:
             self.kill()
     # End Procedure
+    
 # End Class
 
 class Bullet_pu(pygame.sprite.Sprite):
@@ -383,17 +405,7 @@ def game_loop():
         user_old_x = user.rect.x
         user_old_y = user.rect.y
         
-        #if zombie collides with the wall, they will go back to their previous x and y value
-      #  zombie_hit_list = pygame.sprite.spritecollide(zombierandom, wall_list, False)
-    #    for x in zombie_hit_list:
-   # 
-         #   zombierandom.zombie_set_speed_y(0)
-        #    zombierandom.zombie_set_speed_x(0)
-       #     zombierandom.rect.x = zombie_old_x
-      #      zombierandom.rect.y = zombie_old_y
-    ##
-        #zombie_old_x = zombierandom.rect.x
-        #zombie_old_y = zombierandom.rect.y
+        
     
     
         all_sprites_list.update()
@@ -492,15 +504,15 @@ for x in range(50):
             rand_zombfollow_y = random.randint(1,49)
                 
             if map [rand_zomb_y][rand_zomb_x] == 0:
-                zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
-                zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
+                #zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                #zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
                 zombiefollower = FollowerZombie(YELLOW,20,20,rand_zombfollow_x*20,rand_zombfollow_y*20)
                 all_sprites_list.add(zombiefollower)
                 zombie_list.add(zombiefollower)
-                all_sprites_list.add(zombie)
-                zombie_list.add(zombie)
-                all_sprites_list.add(zombierandom)
-                zombie_list.add(zombierandom)
+                #all_sprites_list.add(zombie)
+                #zombie_list.add(zombie)
+                #all_sprites_list.add(zombierandom)
+                #zombie_list.add(zombierandom)
                 count += 1
 
 #Creates the game loop

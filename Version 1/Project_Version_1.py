@@ -273,7 +273,7 @@ pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size))
+screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
 
 # -- Title of new window/screen
 pygame.display.set_caption("Escape")
@@ -425,9 +425,9 @@ while not done:
     
         # -- Draw here
         all_sprites_list.draw(screen)
-        draw_text(screen, str("Bullets: %d" % user.bullet_count),20,40,40)
-        draw_text(screen, str("Zombies Killed: %d" % user.zombies_killed),20,70,60)
-        draw_text(screen, str("Lives: %d" % user.lives_count),20,40,80)
+        draw_text(screen, str("Bullets: %d" % user.bullet_count),50,100,70)
+        #draw_text(screen, str("Zombies Killed: %d" % user.zombies_killed),50,100,120)
+        draw_text(screen, str("Lives: %d" % user.lives_count),50,100,120)
     
         # -- flip display to reveal new position of objects
         pygame.display.flip()

@@ -1,6 +1,5 @@
 import pygame
 import random
-import math
 font_name = pygame.font.match_font('calibri')
 
 
@@ -91,6 +90,8 @@ class Zombie(pygame.sprite.Sprite):
         #Position of player attributes
         self.rect.x = x_zombie
         self.rect.y = y_zombie
+        self.zombie_old_x = x_zombie
+        self.zombie_old_y = y_zombie
         self.speed_y = 1
         self.speed_x = 1
         
@@ -108,13 +109,11 @@ class FollowerZombie(Zombie):
             self.rect.y = self.rect.y - self.speed_y
         #if zombie collides with the wall, they will go back to their previous x and y value
         
-        for x in pygame.sprite.spritecollide(zombiefollower, wall_list, False):
-    
-            #self.zombie_set_speed_y(0)
-            #self.zombie_set_speed_x(0)
+        for x in pygame.sprite.spritecollide(self, wall_list, False):
             self.rect.x = self.zombie_old_x
             self.rect.y = self.zombie_old_y
-            print(1)
+            
+            
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
     def zombie_set_speed_x(self, val):
@@ -123,12 +122,35 @@ class FollowerZombie(Zombie):
     def zombie_set_speed_y(self, val):
         self.speed_y = val
     # End procedure
-class RandomZombie(Zombie):
+    
+class RandZombie(Zombie):
+    def update(self):
+        self.rect.x = self.rect.x + self.speed_x
+        self.rect.y = self.rect.y + self.speed_y
+        
+        randhit = pygame.sprite.spritecollide(self, wall_list, False)
+        print(len(randhit))
+        if len(randhit) > 0:
+            self.speed_x *= random.randint(-1,1)
+            self.speed_y *= random.randint(-1,1)
+    
+    
+            
+    
+class BounceZombie(Zombie):
     
     def update(self):
         
-        self.rect.x = self.rect.x + self.speed_y
-    
+        self.rect.x = self.rect.x + self.speed_x
+        self.rect.y = self.rect.y + self.speed_y
+        
+        bouncehit = pygame.sprite.spritecollide(self, wall_list, False)
+        print(len(bouncehit))
+        if len(bouncehit) > 0:
+            self.speed_x *= -1
+            self.speed_y *= -1
+                
+        
         
     #End procedure
     def zombie_set_speed_x(self, val):
@@ -149,7 +171,7 @@ class Player(pygame.sprite.Sprite):
         self.speed_x = 0
         self.speed_y = 0
         self.bullet_count = 10
-        self.lives_count = 5
+        self.lives_count = 1
         self.zombies_killed = 0
 
         # Call the sprite constructor
@@ -163,16 +185,28 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = size[0] / 2
         self.rect.bottom = size[1] / 2
+        #Declares the Players previous x and y values
+        self.old_x = self.rect.x
+        self.old_y = self.rect.y
     # End procedure
 
     def update(self):
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
-        if self.rect.x <= 0:
-            self.rect.x = 0
-        if self.rect.x >= size[0]:
-
-            self.rect.x = size[0] - 10
+        
+        #If player collides with the wall,they go back to their previous x and y value
+        player_hit_list = pygame.sprite.spritecollide(user, wall_list, False)
+        for x in player_hit_list:
+    
+            self.player_set_speed_y(0)
+            self.player_set_speed_x(0)
+            self.rect.x = self.old_x
+            self.rect.y = self.old_y
+            
+        #Updates the players old x and y values with its current x and y values
+        self.old_x = self.rect.x
+        self.old_y = self.rect.y
+        
     # End procedure
 
     def player_set_speed_x(self, val):
@@ -187,14 +221,14 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
 
     #Constructor
-    def __init__(self,x,y,speed_x,speed_y):
+    def __init__(self,colour,x,y,speed_x,speed_y):
         self.speed_x = speed_x
         self.speed_y = speed_y
 
         super().__init__()
         # Create a sprite and fill it with colour
         self.image = pygame.Surface([10,10])
-        self.image.fill((255,0,0))
+        self.image.fill(colour)
         # Set position of the sprite
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -274,7 +308,7 @@ def spawn_bullet_pu():
 #End procedure
 
 def shoot_up():
-    my_bullet = Bullet(user.rect.x,user.rect.y,0,-1)
+    my_bullet = Bullet(RED,user.rect.x,user.rect.y,0,-5)
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -282,7 +316,7 @@ def shoot_up():
 #End procedure
     
 def shoot_down():
-    my_bullet = Bullet(user.rect.x,user.rect.y,0,1)
+    my_bullet = Bullet(RED,user.rect.x,user.rect.y,0,5)
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -290,7 +324,7 @@ def shoot_down():
 #End procedure
     
 def shoot_right():
-    my_bullet = Bullet(user.rect.x,user.rect.y,1,0)
+    my_bullet = Bullet(RED,user.rect.x,user.rect.y,5,0)
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -298,7 +332,7 @@ def shoot_right():
 #End procedure
     
 def shoot_left():
-    my_bullet = Bullet(user.rect.x,user.rect.y,-1,0)
+    my_bullet = Bullet(RED,user.rect.x,user.rect.y,-5,0)
     bullet_group.add(my_bullet)
     user.bullet_count +=-1
     all_sprites_list.add(my_bullet)
@@ -372,6 +406,9 @@ def game_loop():
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
+        
+        #If bullet collides with wall, bullet is deleted
+        pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
     
     
         bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
@@ -393,17 +430,7 @@ def game_loop():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
     
-        #If player collides with the wall,they go back to their previous x and y value
-        player_hit_list = pygame.sprite.spritecollide(user, wall_list, False)
-        for x in player_hit_list:
-    
-            user.player_set_speed_y(0)
-            user.player_set_speed_x(0)
-            user.rect.x = user_old_x
-            user.rect.y = user_old_y
-    
-        user_old_x = user.rect.x
-        user_old_y = user.rect.y
+        
         
         
     
@@ -437,7 +464,8 @@ pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size))
+screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+
 
 # -- Title of new window/screen
 pygame.display.set_caption("Escape")
@@ -468,7 +496,7 @@ zombie_list = pygame.sprite.Group()
 health_pu_list = pygame.sprite.Group()
 
 
-#Spawns walls and zombies
+
 
 
 #Spawns powerups
@@ -483,37 +511,52 @@ user = Player(RED,18,18)
 all_sprites_list.add(user)
 facing = "right"
 
-count = 0
+spawned = False
+countfollow = 0
+countbounce = 0
+countrand = 0
 # Create walls on the screen (each tile is 20x20 so alter cords)
-for x in range(50):
+for y in range(50):
 
-    for y in range(50):
+    for x in range(50):
         #Creates the walls on the map
-        if map[y][x] == 1:
+        if map[x][y] == 1:
             my_wall = Tile(BLUE,20,20,x*20,y*20)
             wall_list.add(my_wall)
             all_sprites_list.add(my_wall)
                 
-        #Spawns zombies in random locations on the map. Cannot spawn on walls
-        while count != 3:
-            rand_zomb_x = random.randint(1,49)
-            rand_zomb_y = random.randint(1,49)
-            rand_zombrand_x = random.randint(1,49)
-            rand_zombrand_y = random.randint(1,49)
-            rand_zombfollow_x = random.randint(1,49)
-            rand_zombfollow_y = random.randint(1,49)
+    #Spawns zombies in random locations on the map. Cannot spawn on walls
+while countbounce != 0:
+    rand_bouncezomb_x = random.randint(1,49)
+    rand_bouncezomb_y = random.randint(1,49)
+    if map[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
+        #Spawns zombies that bounce off of walls and adds them to the necessary sprite list
+        bouncer = BounceZombie(BLUE,20,20,rand_bouncezomb_x*20,rand_bouncezomb_y*20)
+        all_sprites_list.add(bouncer)
+        zombie_list.add(bouncer)
+        countbounce += 1
+        
+    
+while countfollow != 0:
+    rand_zombfollow_x = random.randint(1,49)
+    rand_zombfollow_y = random.randint(1,49)
+    if map[rand_zombfollow_x][rand_zombfollow_y] == 0:
+        #Spawns zombies that follow the player and adds them to the necessary sprite list
+        zombiefollower = FollowerZombie(YELLOW,20,20,rand_zombfollow_x*20,rand_zombfollow_y*20)
+        all_sprites_list.add(zombiefollower)
+        zombie_list.add(zombiefollower)
+        countfollow += 1
+
+while countrand != 5:
+    rand_zombrand_x = random.randint(1,49)
+    rand_zombrand_y = random.randint(1,49)
+    if map[rand_zombrand_x][rand_zombrand_y] == 0:
+        zombierand = RandZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
+        all_sprites_list.add(zombierand)
+        zombie_list.add(zombierand)
+        countrand += 1
+    
                 
-            if map [rand_zomb_y][rand_zomb_x] == 0:
-                #zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
-                #zombierandom = RandomZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
-                zombiefollower = FollowerZombie(YELLOW,20,20,rand_zombfollow_x*20,rand_zombfollow_y*20)
-                all_sprites_list.add(zombiefollower)
-                zombie_list.add(zombiefollower)
-                #all_sprites_list.add(zombie)
-                #zombie_list.add(zombie)
-                #all_sprites_list.add(zombierandom)
-                #zombie_list.add(zombierandom)
-                count += 1
 
 #Creates the game loop
 game_loop()

@@ -127,12 +127,15 @@ class RandZombie(Zombie):
     def update(self):
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
-        
+        diff_speed_list = [-1,1]
         randhit = pygame.sprite.spritecollide(self, wall_list, False)
-        print(len(randhit))
-        if len(randhit) > 0:
-            self.speed_x *= random.randint(-1,1)
-            self.speed_y *= random.randint(-1,1)
+        for hit in randhit:
+            
+            self.speed_x *= random.choice(diff_speed_list)
+            self.speed_y *= random.choice(diff_speed_list)
+            
+        
+            
     
     
             
@@ -526,7 +529,7 @@ for y in range(50):
             all_sprites_list.add(my_wall)
                 
     #Spawns zombies in random locations on the map. Cannot spawn on walls
-while countbounce != 0:
+while countbounce != 5:
     rand_bouncezomb_x = random.randint(1,49)
     rand_bouncezomb_y = random.randint(1,49)
     if map[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
@@ -537,7 +540,7 @@ while countbounce != 0:
         countbounce += 1
         
     
-while countfollow != 0:
+while countfollow != 5:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
     if map[rand_zombfollow_x][rand_zombfollow_y] == 0:

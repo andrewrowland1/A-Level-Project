@@ -510,7 +510,17 @@ def game_loop():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
         #Next pu_health
-    
+        if len(zombie_list) == 0:
+            global countrand
+            while countrand != 5:
+                rand_zombrand_x = random.randint(1,49)
+                rand_zombrand_y = random.randint(1,49)
+                if map[rand_zombrand_x][rand_zombrand_y] == 0:
+                    zombierand = RandZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
+                    all_sprites_list.add(zombierand)
+                    zombie_list.add(zombierand)
+                    countrand += 1
+            #End While
         
         
         
@@ -545,8 +555,8 @@ pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
-
+screen = pygame.display.set_mode((size))
+#, pygame.FULLSCREEN
 
 # -- Title of new window/screen
 pygame.display.set_caption("Escape")
@@ -595,6 +605,7 @@ facing = "right"
 countfollow = 0
 countbounce = 0
 countrand = 0
+
 # Create walls on the screen (each tile is 20x20 so alter cords)
 for y in range(50):
 
@@ -609,7 +620,7 @@ for y in range(50):
 #next y
                 
     #Spawns zombies in random locations on the map. Cannot spawn on walls
-while countbounce != 5:
+while countbounce != 1:
     rand_bouncezomb_x = random.randint(1,49)
     rand_bouncezomb_y = random.randint(1,49)
     if map[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
@@ -621,7 +632,7 @@ while countbounce != 5:
 #End while
         
     
-while countfollow != 5:
+while countfollow != 1:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
     if map[rand_zombfollow_x][rand_zombfollow_y] == 0:
@@ -632,7 +643,7 @@ while countfollow != 5:
         countfollow += 1
 #End While
 
-while countrand != 5:
+while countrand != 1:
     rand_zombrand_x = random.randint(1,49)
     rand_zombrand_y = random.randint(1,49)
     if map[rand_zombrand_x][rand_zombrand_y] == 0:

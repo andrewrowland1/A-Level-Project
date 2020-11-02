@@ -350,7 +350,21 @@ def shoot_left():
     all_sprites_list.add(my_bullet)
     #If player if facing left, the bullet will shoot left
 #End procedure
-    
+
+def menu_screen():
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    done = True
+                    game_loop()
+        screen.fill(BLACK)
+        draw_text(screen, str("Press the spacebar to play"),40,400,400)
+        pygame.display.update()
 def game_loop():
     done = False
     while not done:
@@ -596,4 +610,4 @@ while countrand != 5:
                 
 
 #Creates the game loop
-game_loop()
+menu_screen()

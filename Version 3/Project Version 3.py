@@ -116,12 +116,14 @@ class FollowerZombie(Zombie):
             
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
+    #End procedure
     def zombie_set_speed_x(self, val):
         self.speed_x = val
-        # End procedure
+    # End procedure
     def zombie_set_speed_y(self, val):
         self.speed_y = val
     # End procedure
+#End class
     
 class RandZombie(Zombie):
     def update(self):
@@ -133,6 +135,8 @@ class RandZombie(Zombie):
             
             self.speed_x *= random.choice(diff_speed_list)
             self.speed_y *= random.choice(diff_speed_list)
+    #End Procedure
+#End class
             
         
             
@@ -148,7 +152,6 @@ class BounceZombie(Zombie):
         self.rect.y = self.rect.y + self.speed_y
         
         bouncehit = pygame.sprite.spritecollide(self, wall_list, False)
-        print(len(bouncehit))
         if len(bouncehit) > 0:
             self.speed_x *= -1
             self.speed_y *= -1
@@ -260,6 +263,8 @@ class Bullet_pu(pygame.sprite.Sprite):
         # Set the position of the player attributes
         self.rect.x = x_ref
         self.rect.y = y_ref
+    #End procedure
+#End class
         
 class Health_pu(pygame.sprite.Sprite):
 
@@ -295,6 +300,8 @@ def spawn_health_pu():
             health_pu_list.add(pu_health)
             all_sprites_list.add(pu_health)
             counter += 1
+        #End if
+    #Endwhile
 #End procedure
 
 def spawn_bullet_pu():
@@ -308,6 +315,8 @@ def spawn_bullet_pu():
             bullet_pu_list.add(pu_bullet)
             all_sprites_list.add(pu_bullet)
             counter += 1
+        #End if
+    #Endwhile
 #End procedure
 
 def shoot_up():
@@ -350,9 +359,12 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            #End if
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
+                #End if
+            #End if
             #Movement controls: right, left, up, down. When key is released, player stops moving
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -362,6 +374,8 @@ def game_loop():
                 elif event.key == pygame.K_RIGHT:
                     user.player_set_speed_x(2)
                     facing = "right"
+                #End if
+            #End if
     
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
@@ -369,6 +383,8 @@ def game_loop():
     
                 elif event.key == pygame.K_LEFT:
                     user.player_set_speed_x(0)
+                #End if
+            #End if
     
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
@@ -378,13 +394,18 @@ def game_loop():
                 elif event.key == pygame.K_DOWN:
                     user.player_set_speed_y(2)
                     facing = "down"
+                #End if
+            #End if
     
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
                     user.player_set_speed_y(0)
+                #End if
     
                 if event.key == pygame.K_DOWN:
                     user.player_set_speed_y(0)
+                #End if
+            #End if
     
             if event.type == pygame.KEYDOWN:
     
@@ -399,6 +420,9 @@ def game_loop():
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
                     shoot_down()
+                #End if
+            #End if
+        #Next event
     
         # -- Game logic goes after this comment
     
@@ -406,9 +430,11 @@ def game_loop():
         user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
         for hit in user_hit_group:
             user.lives_count += -1
+        #Next hit
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
+        #Endif
         
         #If bullet collides with wall, bullet is deleted
         pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
@@ -417,6 +443,7 @@ def game_loop():
         bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
         for shot in bullet_hits:
             user.zombies_killed += 1
+        #Next shot
             
     
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
@@ -426,12 +453,14 @@ def game_loop():
             user.bullet_count += 10
             bullet_pu_list.remove(pu_bullet)
             all_sprites_list.remove(pu_bullet)
+        #Next pu_bullet
             
         healthpu_hit_list = pygame.sprite.spritecollide(user, health_pu_list, True)
         for pu_health in healthpu_hit_list:
             user.lives_count += 1
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
+        #Next pu_health
     
         
         
@@ -514,7 +543,6 @@ user = Player(RED,18,18)
 all_sprites_list.add(user)
 facing = "right"
 
-spawned = False
 countfollow = 0
 countbounce = 0
 countrand = 0
@@ -527,6 +555,9 @@ for y in range(50):
             my_wall = Tile(BLUE,20,20,x*20,y*20)
             wall_list.add(my_wall)
             all_sprites_list.add(my_wall)
+        #End if
+    #next x
+#next y
                 
     #Spawns zombies in random locations on the map. Cannot spawn on walls
 while countbounce != 5:
@@ -538,6 +569,7 @@ while countbounce != 5:
         all_sprites_list.add(bouncer)
         zombie_list.add(bouncer)
         countbounce += 1
+#End while
         
     
 while countfollow != 5:
@@ -549,6 +581,7 @@ while countfollow != 5:
         all_sprites_list.add(zombiefollower)
         zombie_list.add(zombiefollower)
         countfollow += 1
+#End While
 
 while countrand != 5:
     rand_zombrand_x = random.randint(1,49)
@@ -558,6 +591,7 @@ while countrand != 5:
         all_sprites_list.add(zombierand)
         zombie_list.add(zombierand)
         countrand += 1
+#End While
     
                 
 

@@ -359,12 +359,47 @@ def menu_screen():
                 pygame.quit()
             #End if
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+                    pygame.quit()
+                #End if
+            #End if
+            
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     done = True
                     game_loop()
+                if event.key == pygame.K_RETURN:
+                    done = True
+                    help_screen()
         screen.fill(BLACK)
-        draw_text(screen, str("Press the spacebar to play"),40,400,400)
+        draw_text(screen, str("Press the spacebar to play or press the return key to view how to play"),30,500,500)
         pygame.display.update()
+def help_screen():
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+                    pygame.quit()
+                #End if
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    done = True
+                    menu_screen()
+        screen.fill(BLACK)
+        draw_text(screen, str("To move, use the arrow keys"),30,500,200)
+        draw_text(screen, str("To shoot, press the space bar"),30,500,400)
+        draw_text(screen, str("The gun will shoot in the direction of your last movement"),30,500,450)
+        draw_text(screen, str("To quit the game, press the escape key"),30,500,600)
+        draw_text(screen, str("Press the return key to return to the main menu"),30,500,800)
+        pygame.display.update()
+    
 def game_loop():
     done = False
     while not done:

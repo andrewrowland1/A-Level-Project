@@ -1,8 +1,11 @@
 import pygame
 import random
+
 font_name = pygame.font.match_font('calibri')
 
-
+highestscorefile = open("HighestScore.txt","r")
+highestscore = (highestscorefile.read())
+highestscorefile.close()
 
 # -- Global constants
 map1 = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -984,12 +987,27 @@ def endless_game_loop():
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "right":
                     shoot_right()
-    
+   
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "up":
                     shoot_up()
     
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
                     shoot_down()
+                #End if
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    global countrand
+                    #Spawns zombies in random locations on the map. Cannot spawn on walls
+                    rand_zombrand_x = random.randint(1,49)
+                    rand_zombrand_y = random.randint(1,49)
+                    if map2[rand_zombrand_x][rand_zombrand_y] == 0:
+                        #Spawns zombies that bounce off of walls in a random directly and adds them to the necessary sprite list
+                        zombierand = RandZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
+                        all_sprites_list.add(zombierand)
+                        zombie_list.add(zombierand)
+                        countrand += 1
+                    #End if
                 #End if
             #End if
         #Next event
@@ -1033,62 +1051,34 @@ def endless_game_loop():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
         #Next pu_health
+        global highestscore
+        if user.zombies_killed > int(highestscore):
+            highestscore = user.zombies_killed
+            highestscorefile = open("HighestScore.txt","w")
+            highestscorefile.write(str(highestscore))
+            highestscorefile.close()
+            
         
-        if len(zombie_list) == 0:
-            global countrand
-            global countbounce
-            global countfollow
-            #Spawns zombies in random locations on the map. Cannot spawn on walls
-            while countrand != 5:
-                rand_zombrand_x = random.randint(1,49)
-                rand_zombrand_y = random.randint(1,49)
-                if map2[rand_zombrand_x][rand_zombrand_y] == 0:
-                    #Spawns zombies that bounce off of walls in a random directly and adds them to the necessary sprite list
-                    zombierand = RandZombie(YELLOW,20,20,rand_zombrand_x*20,rand_zombrand_y*20)
-                    all_sprites_list.add(zombierand)
-                    zombie_list.add(zombierand)
-                    countrand += 1
-                #End if
-            #End While
-            #Spawns zombies in random locations on the map. Cannot spawn on walls
-            while countbounce != 5:
-                rand_bouncezomb_x = random.randint(1,49)
-                rand_bouncezomb_y = random.randint(1,49)
-                if map2[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
-                    #Spawns zombies that bounce off of walls and adds them to the necessary sprite list
-                    bouncer = BounceZombie(BLUE,20,20,rand_bouncezomb_x*20,rand_bouncezomb_y*20)
-                    all_sprites_list.add(bouncer)
-                    zombie_list.add(bouncer)
-                    countbounce += 1
-                #End if
-            #End while
-        
-            #Spawns zombies in random locations on the map. Cannot spawn on walls
-            while countfollow != 5:
-                rand_zombfollow_x = random.randint(1,49)
-                rand_zombfollow_y = random.randint(1,49)
-                if map2[rand_zombfollow_x][rand_zombfollow_y] == 0:
-                    #Spawns zombies that follow the player and adds them to the necessary sprite list
-                    zombiefollower = FollowerZombie(YELLOW,20,20,rand_zombfollow_x*20,rand_zombfollow_y*20)
-                    all_sprites_list.add(zombiefollower)
-                    zombie_list.add(zombiefollower)
-                    countfollow += 1
-                #End if
-            #End While
+            
         
         
         
     
-    
+        #print(highestscore)
         all_sprites_list.update()
         # -- Screen background is BLACK
         screen.fill(BLACK)
     
         # -- Draw here
         all_sprites_list.draw(screen)
+        
+        
+        
+        
+        draw_text(screen, str("Highest score: %d" % int(highestscore)),20,70,100,WHITE)
         draw_text(screen, str("Bullets: %d" % user.bullet_count),20,40,40, WHITE)
         draw_text(screen, str("Zombies Killed: %d" % user.zombies_killed),20,70,60, WHITE)
-        draw_text(screen, str("Lives: %d" % user.lives_count),20,40,80, WHITE)
+        draw_text(screen, str("Lives: %d" % user.lives_count),20,30,80, WHITE)
     
         # -- flip display to reveal new position of objects
         pygame.display.flip()
@@ -1109,7 +1099,7 @@ pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((size))
 #, pygame.FULLSCREEN
 
 # -- Title of new window/screen
@@ -1175,7 +1165,7 @@ for y in range(50):
 #next y
                 
     #Spawns zombies in random locations on the map. Cannot spawn on walls
-while countbounce != 1:
+while countbounce != 5:
     rand_bouncezomb_x = random.randint(1,49)
     rand_bouncezomb_y = random.randint(1,49)
     if map1[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
@@ -1187,7 +1177,7 @@ while countbounce != 1:
 #End while
         
    
-while countfollow != 1:
+while countfollow != 5:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
     if map1[rand_zombfollow_x][rand_zombfollow_y] == 0:
@@ -1198,7 +1188,7 @@ while countfollow != 1:
         countfollow += 1
 #End While
 
-while countrand != 1:
+while countrand != 5:
     rand_zombrand_x = random.randint(1,49)
     rand_zombrand_y = random.randint(1,49)
     if map1[rand_zombrand_x][rand_zombrand_y] == 0:

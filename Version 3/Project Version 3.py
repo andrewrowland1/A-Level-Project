@@ -570,6 +570,60 @@ def well_done_screen():
         pygame.display.update()
     #End while
 #End procedure
+
+def pre_boss_screen():
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+                    pygame.quit()
+                #End if
+                if event.key == pygame.K_RETURN:
+                    done = True
+                    boss_level()
+                #End if
+                
+            #End if
+        #Next event
+        screen.fill(BLACK)
+        draw_text(screen, str("ESCAPE"),300,500,50, RED)
+        draw_text(screen, str("BOSS LEVEL!!"),150,500,500, BLUE)
+        draw_text(screen, str("Press the return key to start"),50,500,900, BLUE)
+        pygame.display.update()
+    #End while
+#End procedure
+
+def death_screen():
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            #End if
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+                    pygame.quit()
+                #End if
+                if event.key == pygame.K_RETURN:
+                    done = True
+                    menu_screen()
+                #End if
+                
+            #End if
+        #Next event
+        screen.fill(BLACK)
+        draw_text(screen, str("ESCAPE"),300,500,50, RED)
+        draw_text(screen, str("YOU ARE DEAD"),150,500,500, BLUE)
+        draw_text(screen, str("Press the return key to return to the main menu"),50,500,900, BLUE)
+        pygame.display.update()
+    #End while
+#End procedure
         
             
         
@@ -657,6 +711,7 @@ def campaign_game_loop():
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
+            death_screen()
         #Endif
         
         #If bullet collides with wall, bullet is deleted
@@ -685,7 +740,7 @@ def campaign_game_loop():
             all_sprites_list.remove(pu_health)
         #Next pu_health
         if len(zombie_list) == 0:
-            well_done_screen()
+            pre_boss_screen()
         
     
         all_sprites_list.update()
@@ -709,20 +764,22 @@ def campaign_game_loop():
 #End procedure
 
 def boss_level():
-    wall_list.empty()
+    for x in wall_list:
+        x.kill()
+    
     # Create walls on the screen (each tile is 20x20 so alter cords)
     # Create player on the screen
     
     boss = BossZombie(BLUE,100,100,200,200)
     all_sprites_list.add(boss)
     zombie_list.add(boss)
+    boss_lives = 10
     for y in range(50):
 
         for x in range(50):
             #Creates the walls on the map
             if map2[x][y] == 1:
                 my_wall = Tile(BLUE,20,20,x*20,y*20)
-                wall_list.add(my_wall)
                 all_sprites_list.add(my_wall)
                 #End if
         #next x
@@ -811,17 +868,20 @@ def boss_level():
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
+            death_screen()
         #Endif
         
         #If bullet collides with wall, bullet is deleted
         pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
     
     
-        bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
+        bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, False, True)
+        
         for shot in bullet_hits:
-            user.zombies_killed += 1
+            boss_lives += -1
         #Next shot
-            
+        if boss_lives < 1:
+            well_done_screen()
     
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
         bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
@@ -838,8 +898,7 @@ def boss_level():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
         #Next pu_health
-        if len(zombie_list) == 0:
-            well_done_screen()
+        
         
     
         all_sprites_list.update()
@@ -946,6 +1005,7 @@ def endless_game_loop():
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
+            death_screen()
         #Endif
         
         #If bullet collides with wall, bullet is deleted
@@ -1079,6 +1139,7 @@ bullet_group = pygame.sprite.Group()
 bullet_pu_list = pygame.sprite.Group()
 zombie_list = pygame.sprite.Group()
 health_pu_list = pygame.sprite.Group()
+
 
 
 

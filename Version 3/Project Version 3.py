@@ -113,10 +113,9 @@ map2 = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 class Tile(pygame.sprite.Sprite):
     # Define the constructor
     def __init__(self,color,width,height,x_ref,y_ref):
-
         # Call the sprite constructor
         super().__init__()
-
+        
         #Create a sprite and fill it with colour
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
@@ -148,6 +147,9 @@ class Zombie(pygame.sprite.Sprite):
         self.zombie_old_y = y_zombie
         self.speed_y = 1
         self.speed_x = 1
+        if self.rect.x > 1000 or self.rect.x < 0 or self.rect.y > 1000 or self.rect.y < 0:
+            pygame.sprite.Sprite.kill(self)
+            user.zombies_killed += 1
         
     #End procedure
     
@@ -167,8 +169,6 @@ class BossZombie(Zombie):
         for x in pygame.sprite.spritecollide(self, wall_list, False):
             self.rect.x = self.zombie_old_x
             self.rect.y = self.zombie_old_y
-            
-            
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
     #End procedure
@@ -194,13 +194,9 @@ class FollowerZombie(Zombie):
         for x in pygame.sprite.spritecollide(self, wall_list, False):
             self.rect.x = self.zombie_old_x
             self.rect.y = self.zombie_old_y
-            
-            
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
     #End procedure
-        
-            
     
     def zombie_set_speed_x(self, val):
         self.speed_x = val
@@ -216,24 +212,14 @@ class RandZombie(Zombie):
         self.rect.y = self.rect.y + self.speed_y
         diff_speed_list = [-1,1]
         randhit = pygame.sprite.spritecollide(self, wall_list, False)
-        for hit in randhit:
-            
+        for hit in randhit:   
             self.speed_x *= random.choice(diff_speed_list)
-            self.speed_y *= random.choice(diff_speed_list)
-        
-            
+            self.speed_y *= random.choice(diff_speed_list)    
         #Next hit
     #End Procedure
-#End class
-            
-        
-             
-    
-    
-            
-    
+#End class  
+                          
 class BounceZombie(Zombie):
-    
     def update(self):
         
         self.rect.x = self.rect.x + self.speed_x
@@ -243,30 +229,24 @@ class BounceZombie(Zombie):
         if len(bouncehit) > 0:
             self.speed_x *= -1
             self.speed_y *= -1
-        
-            
-        #Next hit
+        #Endif
         if self.rect.x > 1000 or self.rect.x < 0:
             pygame.sprite.Sprite.kill(self)
+        #End if
         if self.rect.y > 1000 or self.rect.y < 0:
             pygame.sprite.Sprite.kill(self)
-                
-        
-        
+        #End if
     #End procedure
     def zombie_set_speed_x(self, val):
         self.speed_x = val
     # End procedure
     def zombie_set_speed_y(self, val):
         self.speed_y = val
-    # End procedure
-    
-        
+    # End procedure        
 #End Class
     
 
 class Player(pygame.sprite.Sprite):
-
     #Constructor
     def __init__(self, color, width, height):
         self.speed_x = 0
@@ -298,16 +278,13 @@ class Player(pygame.sprite.Sprite):
         #If player collides with the wall,they go back to their previous x and y value
         player_hit_list = pygame.sprite.spritecollide(user, wall_list, False)
         for x in player_hit_list:
-    
             self.player_set_speed_y(0)
             self.player_set_speed_x(0)
             self.rect.x = self.old_x
             self.rect.y = self.old_y
-            
         #Updates the players old x and y values with its current x and y values
         self.old_x = self.rect.x
         self.old_y = self.rect.y
-        
     # End procedure
 
     def player_set_speed_x(self, val):
@@ -320,7 +297,6 @@ class Player(pygame.sprite.Sprite):
 #End Class
 
 class Bullet(pygame.sprite.Sprite):
-
     #Constructor
     def __init__(self,colour,x,y,speed_x,speed_y):
         self.speed_x = speed_x
@@ -344,11 +320,9 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.y > 1000:
             self.kill()
     # End Procedure
-    
 # End Class
 
 class Bullet_pu(pygame.sprite.Sprite):
-
     def __init__(self,color,width,height,x_ref,y_ref):
         super().__init__()
         self.image = pygame.Surface([width,height])
@@ -362,7 +336,6 @@ class Bullet_pu(pygame.sprite.Sprite):
 #End class
         
 class Health_pu(pygame.sprite.Sprite):
-
     def __init__(self,color,width,height,x_ref,y_ref):
         super().__init__()
         self.image = pygame.Surface([width,height])
@@ -465,9 +438,13 @@ def menu_screen():
                 if event.key == pygame.K_SPACE:
                     done = True
                     game_choice()
+                #End if
                 if event.key == pygame.K_RETURN:
                     done = True
                     help_screen()
+                #End if
+            #End if
+        #Next event
         screen.fill(BLACK)
         pygame.draw.rect(screen, GREEN, (0,475,size[0],100))
         pygame.draw.rect(screen, GREEN, (0,675,size[0],100))
@@ -475,6 +452,7 @@ def menu_screen():
         draw_text(screen, str("Press the spacebar to play"),50,500,500, WHITE)
         draw_text(screen, str("Press the return key to view how the controls"),50,500,700, WHITE)
         pygame.display.update()
+    #End while
 #End procedure
 
 def game_choice():
@@ -495,12 +473,17 @@ def game_choice():
                 if event.key == pygame.K_LEFT:
                     done = True 
                     endless_game_loop()
+                #End if
                 if event.key == pygame.K_RIGHT:
                     done = True
                     campaign_game_loop()
+                #End if
                 if event.key == pygame.K_RETURN:
                     done = True
                     menu_screen()
+                #End if
+            #End if
+        #Next event
         screen.fill(BLACK)
         pygame.draw.rect(screen, GREEN, (0,475,size[0],100))
         pygame.draw.rect(screen, GREEN, (0,675,size[0],100))
@@ -510,6 +493,7 @@ def game_choice():
         draw_text(screen, str("Press the right arrow key to play a campaign game"),50,500,700, WHITE)
         draw_text(screen, str("Press the return key to return to the main menu"),50,500,900, WHITE)
         pygame.display.update()
+    #End while
                     
 def help_screen():
     done = False
@@ -563,6 +547,7 @@ def well_done_screen():
                 if event.key == pygame.K_DOWN:
                     done = True
                     boss_level()
+                #End if
             #End if
         #Next event
         screen.fill(BLACK)
@@ -590,7 +575,6 @@ def pre_boss_screen():
                     done = True
                     boss_level()
                 #End if
-                
             #End if
         #Next event
         screen.fill(BLACK)
@@ -617,7 +601,6 @@ def death_screen():
                     done = True
                     menu_screen()
                 #End if
-                
             #End if
         #Next event
         screen.fill(BLACK)
@@ -648,55 +631,43 @@ def campaign_game_loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     user.player_set_speed_x(-2)
-                    facing = "left"
-    
+                    facing = "left"    
                 elif event.key == pygame.K_RIGHT:
                     user.player_set_speed_x(2)
                     facing = "right"
                 #End if
             #End if
-    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
                     user.player_set_speed_x(0)
-    
                 elif event.key == pygame.K_LEFT:
                     user.player_set_speed_x(0)
                 #End if
             #End if
-    
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     user.player_set_speed_y(-2)
                     facing = "up"
-    
                 elif event.key == pygame.K_DOWN:
                     user.player_set_speed_y(2)
                     facing = "down"
                 #End if
             #End if
-    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
                     user.player_set_speed_y(0)
                 #End if
-    
                 if event.key == pygame.K_DOWN:
                     user.player_set_speed_y(0)
                 #End if
             #End if
-    
             if event.type == pygame.KEYDOWN:
-    
                 if event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "left":
                     shoot_left()
-    
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "right":
                     shoot_right()
-    
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "up":
                     shoot_up()
-    
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
                     shoot_down()
                 #End if
@@ -708,28 +679,22 @@ def campaign_game_loop():
         user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
         for hit in user_hit_group:
             user.lives_count += -1
+            user.zombies_killed += 1
             
-    
-    
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
             death_screen()
         #Endif
-        
         #If bullet collides with wall, bullet is deleted
         pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
-    
     
         bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
         for shot in bullet_hits:
             user.zombies_killed += 1
         #Next shot
-            
-    
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
         bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
-        
         for pu_bullet in bulletpu_hit_list:
             user.bullet_count += 10
             bullet_pu_list.remove(pu_bullet)
@@ -742,10 +707,10 @@ def campaign_game_loop():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
         #Next pu_health
+        
         if len(zombie_list) == 0:
             pre_boss_screen()
         
-    
         all_sprites_list.update()
         # -- Screen background is BLACK
         screen.fill(BLACK)
@@ -756,10 +721,8 @@ def campaign_game_loop():
         draw_text(screen, str("Bullets: %d" % user.bullet_count),20,40,40, WHITE)
         draw_text(screen, str("Zombies Killed: %d" % user.zombies_killed),20,70,60, WHITE)
         draw_text(screen, str("Lives: %d" % user.lives_count),20,40,80, WHITE)
-    
         # -- flip display to reveal new position of objects
         pygame.display.flip()
-    
         # -- The clock ticks over
         clock.tick(60)
     #End While - End of game loop
@@ -778,7 +741,6 @@ def boss_level():
     zombie_list.add(boss)
     boss_lives = 10
     for y in range(50):
-
         for x in range(50):
             #Creates the walls on the map
             if map2[x][y] == 1:
@@ -865,9 +827,8 @@ def boss_level():
         user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
         for hit in user_hit_group:
             user.lives_count += -1
+            user.zombies_killed += 1
             
-    
-    
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
@@ -877,7 +838,6 @@ def boss_level():
         #If bullet collides with wall, bullet is deleted
         pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
     
-    
         bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, False, True)
         
         for shot in bullet_hits:
@@ -885,7 +845,7 @@ def boss_level():
         #Next shot
         if boss_lives < 1:
             well_done_screen()
-    
+
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
         bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
         
@@ -894,7 +854,7 @@ def boss_level():
             bullet_pu_list.remove(pu_bullet)
             all_sprites_list.remove(pu_bullet)
         #Next pu_bullet
-            
+           
         healthpu_hit_list = pygame.sprite.spritecollide(user, health_pu_list, True)
         for pu_health in healthpu_hit_list:
             user.lives_count += 1
@@ -902,8 +862,6 @@ def boss_level():
             all_sprites_list.remove(pu_health)
         #Next pu_health
         
-        
-    
         all_sprites_list.update()
         # -- Screen background is BLACK
         screen.fill(BLACK)
@@ -914,7 +872,7 @@ def boss_level():
         draw_text(screen, str("Bullets: %d" % user.bullet_count),20,40,40, WHITE)
         draw_text(screen, str("Zombies Killed: %d" % user.zombies_killed),20,70,60, WHITE)
         draw_text(screen, str("Lives: %d" % user.lives_count),20,40,80, WHITE)
-    
+ 
         # -- flip display to reveal new position of objects
         pygame.display.flip()
     
@@ -928,7 +886,6 @@ def endless_game_loop():
     done = False
     while not done:
     # -- User input and controls
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -943,54 +900,42 @@ def endless_game_loop():
                 if event.key == pygame.K_LEFT:
                     user.player_set_speed_x(-2)
                     facing = "left"
-    
                 elif event.key == pygame.K_RIGHT:
                     user.player_set_speed_x(2)
                     facing = "right"
                 #End if
             #End if
-    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
                     user.player_set_speed_x(0)
-    
                 elif event.key == pygame.K_LEFT:
                     user.player_set_speed_x(0)
                 #End if
             #End if
-    
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     user.player_set_speed_y(-2)
                     facing = "up"
-    
                 elif event.key == pygame.K_DOWN:
                     user.player_set_speed_y(2)
                     facing = "down"
                 #End if
             #End if
-    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
                     user.player_set_speed_y(0)
                 #End if
-    
                 if event.key == pygame.K_DOWN:
                     user.player_set_speed_y(0)
                 #End if
             #End if
-    
             if event.type == pygame.KEYDOWN:
-    
                 if event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "left":
                     shoot_left()
-    
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "right":
                     shoot_right()
-   
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "up":
                     shoot_up()
-    
                 elif event.key == pygame.K_SPACE and user.bullet_count > 0 and facing == "down":
                     shoot_down()
                 #End if
@@ -1008,6 +953,9 @@ def endless_game_loop():
                         zombie_list.add(zombierand)
                         countrand += 1
                     #End if
+                if event.key == pygame.K_p:
+                    spawn_bullet_pu()
+                    spawn_health_pu()
                 #End if
             #End if
         #Next event
@@ -1017,9 +965,7 @@ def endless_game_loop():
         user_hit_group = pygame.sprite.spritecollide(user, zombie_list, True)
         for hit in user_hit_group:
             user.lives_count += -1
-            
-    
-    
+            user.zombies_killed += -1
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
@@ -1029,13 +975,11 @@ def endless_game_loop():
         #If bullet collides with wall, bullet is deleted
         pygame.sprite.groupcollide(wall_list, bullet_group, False, True)
     
-    
         bullet_hits = pygame.sprite.groupcollide(zombie_list, bullet_group, True, True)
         for shot in bullet_hits:
             user.zombies_killed += 1
         #Next shot
             
-    
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
         bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
         
@@ -1058,22 +1002,12 @@ def endless_game_loop():
             highestscorefile.write(str(highestscore))
             highestscorefile.close()
             
-        
-            
-        
-        
-        
-    
-        #print(highestscore)
         all_sprites_list.update()
         # -- Screen background is BLACK
         screen.fill(BLACK)
     
         # -- Draw here
         all_sprites_list.draw(screen)
-        
-        
-        
         
         draw_text(screen, str("Highest score: %d" % int(highestscore)),20,70,100,WHITE)
         draw_text(screen, str("Bullets: %d" % user.bullet_count),20,40,40, WHITE)
@@ -1090,16 +1024,12 @@ def endless_game_loop():
 #End procedure
 
 
-
-
-
-
 # -- Initialise PyGame
 pygame.init()
 
 # -- Blank Screen
 size = (1000,1000)
-screen = pygame.display.set_mode((size))
+screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
 #, pygame.FULLSCREEN
 
 # -- Title of new window/screen
@@ -1110,7 +1040,6 @@ done = False
 
 # --Manages how fast screen refreshes
 clock = pygame.time.Clock()
-
 
 # -- colours
 BLACK = (0,0,0)
@@ -1130,17 +1059,9 @@ bullet_pu_list = pygame.sprite.Group()
 zombie_list = pygame.sprite.Group()
 health_pu_list = pygame.sprite.Group()
 
-
-
-
-
-
 #Spawns powerups
 spawn_bullet_pu()
 spawn_health_pu()
-
-
-
 
 # Create player on the screen
 user = Player(RED,18,18)
@@ -1153,7 +1074,6 @@ countrand = 0
 
 # Create walls on the screen (each tile is 20x20 so alter cords)
 for y in range(50):
-
     for x in range(50):
         #Creates the walls on the map
         if map1[x][y] == 1:
@@ -1162,9 +1082,8 @@ for y in range(50):
             all_sprites_list.add(my_wall)
         #End if
     #next x
-#next y
-                
-    #Spawns zombies in random locations on the map. Cannot spawn on walls
+#next y            
+#Spawns zombies in random locations on the map. Cannot spawn on walls
 while countbounce != 5:
     rand_bouncezomb_x = random.randint(1,49)
     rand_bouncezomb_y = random.randint(1,49)
@@ -1175,8 +1094,6 @@ while countbounce != 5:
         zombie_list.add(bouncer)
         countbounce += 1
 #End while
-        
-   
 while countfollow != 5:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
@@ -1187,7 +1104,6 @@ while countfollow != 5:
         zombie_list.add(zombiefollower)
         countfollow += 1
 #End While
-
 while countrand != 5:
     rand_zombrand_x = random.randint(1,49)
     rand_zombrand_y = random.randint(1,49)
@@ -1197,8 +1113,6 @@ while countrand != 5:
         zombie_list.add(zombierand)
         countrand += 1
 #End While
-    
-                
 
 #Creates the game loop
 menu_screen()

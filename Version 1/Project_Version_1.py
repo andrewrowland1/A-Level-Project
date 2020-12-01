@@ -263,10 +263,10 @@ def spawn_walls():
                 rand_zomb_y = random.randint(1,49)
                 
                 if map [rand_zomb_y][rand_zomb_x] == 0:
-                    zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
-                    all_sprites_list.add(zombie)
-                    zombie_list.add(zombie)
-                    count += 1
+                   zombie = Zombie(YELLOW,20,20,rand_zomb_x*20,rand_zomb_y*20)
+                   all_sprites_list.add(zombie)
+                   zombie_list.add(zombie)
+                   count += 1
 
 # -- Initialise PyGame
 pygame.init()
@@ -309,8 +309,8 @@ spawn_walls()
 
 
 #Spawns powerups
-spawn_bullet_pu()
-spawn_health_pu()
+#spawn_bullet_pu()
+#spawn_health_pu()
 
 
 # Create player on the screen

@@ -138,6 +138,7 @@ class Zombie(pygame.sprite.Sprite):
         #Create a sprite and fill it with a colour
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
+        self.image = pygame.image.load("zombie_face.jpg").convert()
         self.rect = self.image.get_rect()
 
         #Position of player attributes
@@ -150,6 +151,7 @@ class Zombie(pygame.sprite.Sprite):
         if self.rect.x > 1000 or self.rect.x < 0 or self.rect.y > 1000 or self.rect.y < 0:
             pygame.sprite.Sprite.kill(self)
             user.zombies_killed += 1
+            zombie_list.remove(self)
         
     #End procedure
     
@@ -172,12 +174,7 @@ class BossZombie(Zombie):
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
     #End procedure
-    def zombie_set_speed_x(self, val):
-        self.speed_x = val
-    # End procedure
-    def zombie_set_speed_y(self, val):
-        self.speed_y = val
-    # End procedure
+#End class
         
 class FollowerZombie(Zombie):
     def update(self):
@@ -197,13 +194,6 @@ class FollowerZombie(Zombie):
         self.zombie_old_x = self.rect.x
         self.zombie_old_y = self.rect.y
     #End procedure
-    
-    def zombie_set_speed_x(self, val):
-        self.speed_x = val
-    # End procedure
-    def zombie_set_speed_y(self, val):
-        self.speed_y = val
-    # End procedure
 #End class
     
 class RandZombie(Zombie):
@@ -216,6 +206,10 @@ class RandZombie(Zombie):
             self.speed_x *= random.choice(diff_speed_list)
             self.speed_y *= random.choice(diff_speed_list)    
         #Next hit
+        if self.rect.x > 1000 or self.rect.x < 0 or self.rect.y > 1000 or self.rect.y < 0:
+            pygame.sprite.Sprite.kill(self)
+            user.zombies_killed += 1
+            zombie_list.remove(self)
     #End Procedure
 #End class  
                           
@@ -230,19 +224,7 @@ class BounceZombie(Zombie):
             self.speed_x *= -1
             self.speed_y *= -1
         #Endif
-        if self.rect.x > 1000 or self.rect.x < 0:
-            pygame.sprite.Sprite.kill(self)
-        #End if
-        if self.rect.y > 1000 or self.rect.y < 0:
-            pygame.sprite.Sprite.kill(self)
-        #End if
-    #End procedure
-    def zombie_set_speed_x(self, val):
-        self.speed_x = val
-    # End procedure
-    def zombie_set_speed_y(self, val):
-        self.speed_y = val
-    # End procedure        
+    #End procedure        
 #End Class
     
 
@@ -261,6 +243,7 @@ class Player(pygame.sprite.Sprite):
         # Create a sprite and fill it with colour
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
+        self.image = pygame.image.load("explorer_image.jpg").convert()
 
         # Set position of sprite
         self.rect = self.image.get_rect()
@@ -317,8 +300,10 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x = self.rect.x + self.speed_x
         if self.rect.x > 1000:
             self.kill()
+            zombie_list.remove(self)
         if self.rect.y > 1000:
             self.kill()
+            zombie_list.remove(self)
     # End Procedure
 # End Class
 
@@ -327,6 +312,7 @@ class Bullet_pu(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
+        self.image = pygame.image.load("ammo_box.png").convert()
         self.rect = self.image.get_rect()
 
         # Set the position of the player attributes
@@ -340,6 +326,7 @@ class Health_pu(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
+        self.image = pygame.image.load("health_carepackage.png").convert()
         self.rect = self.image.get_rect()
 
         # Set the position of the player attributes
@@ -389,6 +376,7 @@ def spawn_bullet_pu():
 
 def shoot_up():
     my_bullet = Bullet(RED,user.rect.x,user.rect.y,0,-5)
+    my_bullet.image = pygame.image.load("bullet_up.jpg")
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -397,6 +385,7 @@ def shoot_up():
     
 def shoot_down():
     my_bullet = Bullet(RED,user.rect.x,user.rect.y,0,5)
+    my_bullet.image = pygame.image.load("bullet_down.jpg")
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -405,6 +394,7 @@ def shoot_down():
    
 def shoot_right():
     my_bullet = Bullet(RED,user.rect.x,user.rect.y,5,0)
+    my_bullet.image = pygame.image.load("bullet_right.jpg")
     bullet_group.add(my_bullet)
     user.bullet_count += -1
     all_sprites_list.add(my_bullet)
@@ -413,6 +403,7 @@ def shoot_right():
     
 def shoot_left():
     my_bullet = Bullet(RED,user.rect.x,user.rect.y,-5,0)
+    my_bullet.image = pygame.image.load("bullet_left.jpg")
     bullet_group.add(my_bullet)
     user.bullet_count +=-1
     all_sprites_list.add(my_bullet)
@@ -450,7 +441,7 @@ def menu_screen():
         pygame.draw.rect(screen, GREEN, (0,675,size[0],100))
         draw_text(screen, str("ESCAPE"),300,500,50, RED)
         draw_text(screen, str("Press the spacebar to play"),50,500,500, WHITE)
-        draw_text(screen, str("Press the return key to view how the controls"),50,500,700, WHITE)
+        draw_text(screen, str("Press the return key to view the controls"),50,500,700, WHITE)
         pygame.display.update()
     #End while
 #End procedure
@@ -494,6 +485,7 @@ def game_choice():
         draw_text(screen, str("Press the return key to return to the main menu"),50,500,900, WHITE)
         pygame.display.update()
     #End while
+#Endprocedure
                     
 def help_screen():
     done = False
@@ -606,6 +598,7 @@ def death_screen():
         screen.fill(BLACK)
         draw_text(screen, str("ESCAPE"),300,500,50, RED)
         draw_text(screen, str("YOU ARE DEAD"),150,500,500, BLUE)
+        draw_text(screen, str("Highest score: %d" % int(highestscore)),120,500,700, BLUE)
         draw_text(screen, str("Press the return key to return to the main menu"),50,500,900, BLUE)
         pygame.display.update()
     #End while
@@ -708,8 +701,10 @@ def campaign_game_loop():
             all_sprites_list.remove(pu_health)
         #Next pu_health
         
+        #If user has killed all zombies then the pre boss screen appears
         if len(zombie_list) == 0:
             pre_boss_screen()
+        #Endif
         
         all_sprites_list.update()
         # -- Screen background is BLACK
@@ -730,16 +725,18 @@ def campaign_game_loop():
 #End procedure
 
 def boss_level():
+    #Clears all walls from the screen from previous game
     for x in wall_list:
         x.kill()
     
-    # Create walls on the screen (each tile is 20x20 so alter cords)
     # Create player on the screen
-    
-    boss = BossZombie(BLUE,100,100,200,200)
+    boss = BossZombie(BLUE,120,120,200,200)
+    boss.image = pygame.image.load("boss_zombie.png")
     all_sprites_list.add(boss)
     zombie_list.add(boss)
     boss_lives = 10
+    
+    # Create walls on the screen (each tile is 20x20 so alter cords)
     for y in range(50):
         for x in range(50):
             #Creates the walls on the map
@@ -845,6 +842,7 @@ def boss_level():
         #Next shot
         if boss_lives < 1:
             well_done_screen()
+        #endif
 
         #If player collides with a powerup, the powerup gets deleted, and the player's number of bullets increases
         bulletpu_hit_list = pygame.sprite.spritecollide(user, bullet_pu_list, True,)
@@ -966,6 +964,7 @@ def endless_game_loop():
         for hit in user_hit_group:
             user.lives_count += -1
             user.zombies_killed += -1
+            
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
             done = True
@@ -995,12 +994,14 @@ def endless_game_loop():
             health_pu_list.remove(pu_health)
             all_sprites_list.remove(pu_health)
         #Next pu_health
+        
         global highestscore
         if user.zombies_killed > int(highestscore):
             highestscore = user.zombies_killed
             highestscorefile = open("HighestScore.txt","w")
             highestscorefile.write(str(highestscore))
             highestscorefile.close()
+        #Endif
             
         all_sprites_list.update()
         # -- Screen background is BLACK
@@ -1084,8 +1085,8 @@ for y in range(50):
     #next x
 #next y            
 #Spawns zombies in random locations on the map. Cannot spawn on walls
-while countbounce != 5:
-    rand_bouncezomb_x = random.randint(1,49)
+while countbounce != 0:
+    rand_bouncezomb_x = random.randint(1,49) 
     rand_bouncezomb_y = random.randint(1,49)
     if map1[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
         #Spawns zombies that bounce off of walls and adds them to the necessary sprite list
@@ -1094,7 +1095,7 @@ while countbounce != 5:
         zombie_list.add(bouncer)
         countbounce += 1
 #End while
-while countfollow != 5:
+while countfollow != 1:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
     if map1[rand_zombfollow_x][rand_zombfollow_y] == 0:
@@ -1104,7 +1105,7 @@ while countfollow != 5:
         zombie_list.add(zombiefollower)
         countfollow += 1
 #End While
-while countrand != 5:
+while countrand != 0:
     rand_zombrand_x = random.randint(1,49)
     rand_zombrand_y = random.randint(1,49)
     if map1[rand_zombrand_x][rand_zombrand_y] == 0:
@@ -1113,6 +1114,7 @@ while countrand != 5:
         zombie_list.add(zombierand)
         countrand += 1
 #End While
+
 
 #Creates the game loop
 menu_screen()

@@ -825,6 +825,8 @@ def boss_level():
         for hit in user_hit_group:
             user.lives_count += -1
             user.zombies_killed += 1
+            done = True
+            well_done_screen()
             
         #If player runs out of lives, the game quits
         if user.lives_count < 1:
@@ -1085,7 +1087,7 @@ for y in range(50):
     #next x
 #next y            
 #Spawns zombies in random locations on the map. Cannot spawn on walls
-while countbounce != 0:
+while countbounce != 2:
     rand_bouncezomb_x = random.randint(1,49) 
     rand_bouncezomb_y = random.randint(1,49)
     if map1[rand_bouncezomb_x][rand_bouncezomb_y] == 0:
@@ -1095,7 +1097,7 @@ while countbounce != 0:
         zombie_list.add(bouncer)
         countbounce += 1
 #End while
-while countfollow != 1:
+while countfollow != 2:
     rand_zombfollow_x = random.randint(1,49)
     rand_zombfollow_y = random.randint(1,49)
     if map1[rand_zombfollow_x][rand_zombfollow_y] == 0:
@@ -1105,7 +1107,7 @@ while countfollow != 1:
         zombie_list.add(zombiefollower)
         countfollow += 1
 #End While
-while countrand != 0:
+while countrand != 2:
     rand_zombrand_x = random.randint(1,49)
     rand_zombrand_y = random.randint(1,49)
     if map1[rand_zombrand_x][rand_zombrand_y] == 0:
